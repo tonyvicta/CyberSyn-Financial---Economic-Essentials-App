@@ -36,3 +36,9 @@ Finance-ecomomics-dashboard-app/
 │
 └── README.md
 ```
+
+
+
+
+
+![Excel to PowerBI workflow](./sis_preview.gif)
