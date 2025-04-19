@@ -11,7 +11,7 @@ A Streamlit application that loads and visualizes daily stock performance and fo
 ---
 
 ## 🧰 Tech Stack
-- Snowflake (Cloud Data Platform)
+- Snowflake Marketplace
 - Streamlit in Snowflake (SiS App)
 - Snowpark for Python.
 - SQL
