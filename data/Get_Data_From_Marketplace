@@ -1,0 +1,27 @@
+📥 Accessing the Finance & Economics Dataset from Snowflake Marketplace
+This project relies on the Finance & Economics dataset available for free on the Snowflake Marketplace. Follow these steps to get access and begin using the data:
+
+✅ Step 1: Sign in to Snowflake
+Log in to your Snowflake account at https://app.snowflake.com 
+If you don’t have an account, you can create a free trial account here.
+
+✅ Step 2: Open the Marketplace
+In the left-hand menu of the Snowflake UI:
+1. Click on Marketplace
+2. In the search bar, type: Finance & Economics
+3. Look for the listing titled "Finance & Economics" provided by Cybersyn (or Snowflake, depending on region).
+
+✅ Step 3: Get the Data
+1. Click Get Data
+2. Assign a name for the database, such as: FINANCE_ECONOMICS
+3. Choose a role (e.g., SYSADMIN) that has permission to access shared databases
+4. Click Create Database
+  
+✅ Step 4: Use the Required Tables
+For this project, you'll be using two main tables from the CYBERSYN schema:
+
+STOCK_PRICE_TIMESERIES:
+Historical stock price and volume data
+
+FX_RATES_TIMESERIES:
+Daily foreign exchange rates (e.g., EUR to USD)
