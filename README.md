@@ -27,7 +27,7 @@ Finance-ecomomics-dashboard-app/
 │
 ├── snowflake_sql_scripts/
 │   ├── 01_create_database.sql
-│   └── 02_copying_and_previewing_table.sql
+│   └── 02_copy_and_preview_table.sql
 │
 ├── streamlit_code/
 │   └── app.py                                      # Streamlit app
