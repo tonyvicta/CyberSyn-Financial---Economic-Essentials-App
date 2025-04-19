@@ -26,8 +26,7 @@ Finance-ecomomics-dashboard-app/
 │   └── Get_Data_From_Marketplace        # Finance & Ecomomics data 
 │
 ├── snowflake_sql_scripts/
-│   ├── 01_create_database.sql
-│   └── 02_copy_and_preview_table.sql
+│   └── copy_and_preview_table.sql
 │
 ├── streamlit_code/
 │   └── app.py                                      # Streamlit app
