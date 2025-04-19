@@ -1,7 +1,7 @@
 
 
 
-# Finance and Economics Dashboard
+# Financial & Economic Essentials 
 
 
 A Streamlit application that loads and visualizes daily stock performance and foreign exchange (FX) rate data loaded from the Snowflake Marketplace using Snowpark for Python.
@@ -19,7 +19,7 @@ A Streamlit application that loads and visualizes daily stock performance and fo
 ## 📁 Project Structure
 
 ```
-Finance-ecomomics-dashboard-app/
+Financial-ecomomic-Essentials/
 ├── data/
 │   └── Get_Data_From_Marketplace        # Finance & Ecomomics data 
 │
