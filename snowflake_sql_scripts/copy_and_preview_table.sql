@@ -1,0 +1,27 @@
+
+-- Preview stock price data
+SELECT * 
+FROM FINANCE_ECONOMICS.CYBERSYN.STOCK_PRICE_TIMESERIES
+LIMIT 10;
+
+-- Preview FX rates
+SELECT * 
+FROM FINANCE_ECONOMICS.CYBERSYN.FX_RATES_TIMESERIES
+LIMIT 10;
+
+
+📌 Optional: Copy Data to a Writable Database
+If you want to filter or transform the dataset in your own schema which is what i did:
+
+-- Clone table into your own DB (e.g., for editing)
+CREATE OR REPLACE TABLE MY_DB.PUBLIC.STOCK_PRICE_TIMESERIES AS
+SELECT * 
+FROM FINANCE_ECONOMICS.CYBERSYN.STOCK_PRICE_TIMESERIES;
+
+CREATE OR REPLACE TABLE MY_DB.PUBLIC.FX_RATES_TIMESERIES AS
+SELECT * 
+FROM FINANCE_ECONOMICS.CYBERSYN.FX_RATES_TIMESERIES;
+
+
+
+
