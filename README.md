@@ -39,8 +39,11 @@ Finance-ecomomics-dashboard-app/
 
 
 
+```
 
-
-### Financial & Economic Essentials
+### 💸📈 Financial & Economic Essentials
 
 ![sis_preview](https://github.com/user-attachments/assets/3db7231e-edf8-464c-884b-23f0b502ce92)
+
+
+```
