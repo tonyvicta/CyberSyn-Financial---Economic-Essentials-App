@@ -1,5 +1,5 @@
 # Import necessary libraries
-from snowflake.snowpark.context import get_active_session
+from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col, when, max, lag
 from snowflake.snowpark.window import Window
 import streamlit as st
@@ -10,13 +10,25 @@ from datetime import timedelta
 # Set Streamlit page configuration
 st.set_page_config(layout="wide")
 
-# Get active Snowflake session
-session = get_active_session()
+# Create Snowflake session using Streamlit secrets
+@st.cache_resource
+def create_session():
+    connection_parameters = {
+        "account": st.secrets["snowflake"]["account"],
+        "user": st.secrets["snowflake"]["user"],
+        "password": st.secrets["snowflake"]["password"],
+        "role": st.secrets["snowflake"]["role"],
+        "warehouse": st.secrets["snowflake"]["warehouse"],
+        "database": st.secrets["snowflake"]["database"],
+        "schema": st.secrets["snowflake"]["schema"]
+    }
+    return Session.builder.configs(connection_parameters).create()
+
+session = create_session()
 
 # Cache the data loading process
 @st.cache_data
 def load_data():
-    # Load and filter daily stock price data
     stock_df = (
         session.table("FINANCE_ECONOMICS.PUBLIC.STOCK_PRICE_TIMESERIES")
         .filter(
@@ -30,7 +42,7 @@ def load_data():
         )
     )
 
-    # Calculate day-over-day percentage change in post-market close
+    # Day-over-day percentage change
     window_spec = Window.partition_by("TICKER").order_by("DATE")
     stock_df = stock_df.with_column(
         "DAY_OVER_DAY_CHANGE",
@@ -38,7 +50,6 @@ def load_data():
         lag("POSTMARKET_CLOSE", 1).over(window_spec)
     )
 
-    # Load and filter FX rates data
     fx_df = (
         session.table("FINANCE_ECONOMICS.PUBLIC.FX_RATES_TIMESERIES")
         .filter((col("BASE_CURRENCY_ID") == "EUR") & (col("DATE") >= "2019-01-01"))
@@ -50,22 +61,14 @@ def load_data():
 # Load the data
 df_stocks, df_fx = load_data()
 
-
-# -------------------------
 # Stock Price Visualisation
-# -------------------------
 def stock_prices():
     st.subheader("Stock Performance on the Nasdaq for the Magnificent 7")
-
-    # Convert DATE column to datetime
     df_stocks["DATE"] = pd.to_datetime(df_stocks["DATE"])
     min_date = df_stocks["DATE"].min()
     max_date = df_stocks["DATE"].max()
-
-    # Default to last 30 days of data
     default_start = max_date - timedelta(days=30)
-    
-    # Date input widget
+
     start_date, end_date = st.date_input(
         "Date range:",
         [default_start, max_date],
@@ -74,32 +77,23 @@ def stock_prices():
         key="date_range"
     )
 
-    # Filter by selected date range
     df_filtered = df_stocks[
         (df_stocks["DATE"] >= pd.to_datetime(start_date)) &
         (df_stocks["DATE"] <= pd.to_datetime(end_date))
     ]
 
-    # Ticker filter
     available_tickers = df_filtered["TICKER"].unique().tolist()
     default_tickers = [t for t in ["AAPL", "MSFT", "AMZN", "GOOGL", "META", "TSLA", "NVDA"] if t in available_tickers]
 
     selected_tickers = st.multiselect(
-        "Select Ticker(s):",
-        options=available_tickers,
-        default=default_tickers
+        "Select Ticker(s):", options=available_tickers, default=default_tickers
     )
-
     df_filtered = df_filtered[df_filtered["TICKER"].isin(selected_tickers)]
 
-    # Metric selection
     metric = st.selectbox(
-        "Metric:",
-        options=["DAY_OVER_DAY_CHANGE", "POSTMARKET_CLOSE", "NASDAQ_VOLUME"],
-        index=0
+        "Metric:", ["DAY_OVER_DAY_CHANGE", "POSTMARKET_CLOSE", "NASDAQ_VOLUME"], index=0
     )
 
-    # Line chart
     chart = alt.Chart(df_filtered).mark_line().encode(
         x=alt.X("DATE:T", title="Date"),
         y=alt.Y(metric, title=metric.replace("_", " ").title()),
@@ -109,44 +103,21 @@ def stock_prices():
 
     st.altair_chart(chart, use_container_width=True)
 
-
-# -------------------------
 # FX Rates Visualisation
-# -------------------------
 def fx_rates():
     st.subheader("EUR Exchange (FX) Rates by Currency Over Time")
-
-    # Define available currencies
     currencies = [
-        "British Pound Sterling",
-        "Canadian Dollar",
-        "United States Dollar",
-        "Japanese Yen",
-        "Polish Zloty",
-        "Turkish Lira",
-        "Swiss Franc"
+        "British Pound Sterling", "Canadian Dollar", "United States Dollar",
+        "Japanese Yen", "Polish Zloty", "Turkish Lira", "Swiss Franc"
     ]
-
-    # Multiselect currency filter
     selected_currencies = st.multiselect(
-        "Select Currencies:",
-        options=currencies,
-        default=[
-            "British Pound Sterling",
-            "Canadian Dollar",
-            "United States Dollar",
-            "Swiss Franc",
-            "Polish Zloty"
-        ]
+        "Select Currencies:", options=currencies,
+        default=["British Pound Sterling", "Canadian Dollar", "United States Dollar", "Swiss Franc", "Polish Zloty"]
     )
-
     st.markdown("___")
-
-    # Filter FX data based on selection
     currencies_to_plot = selected_currencies or currencies
     df_filtered = df_fx[df_fx["QUOTE_CURRENCY_NAME"].isin(currencies_to_plot)]
 
-    # Altair line chart
     chart = alt.Chart(df_filtered).mark_line().encode(
         x=alt.X("DATE:T", title="Date"),
         y=alt.Y("VALUE", title="Exchange Rate (EUR → ...)"),
@@ -156,19 +127,12 @@ def fx_rates():
 
     st.altair_chart(chart, use_container_width=True)
 
-
-# -------------------------
-# App Navigation
-# -------------------------
+# Main navigation
 st.header("Finance & Economics Dashboard")
 st.sidebar.title("Navigation")
-
 page_options = {
     "Daily Stock Performance": stock_prices,
     "Exchange (FX) Rates": fx_rates
 }
-
 selected_page = st.sidebar.selectbox("Select a Page", page_options.keys())
-
-# Render selected page
 page_options[selected_page]()
