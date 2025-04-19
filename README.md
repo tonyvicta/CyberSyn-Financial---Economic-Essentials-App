@@ -32,7 +32,7 @@ Finance-ecomomics-dashboard-app/
 │   └── app.py                                      # Streamlit app
 │
 ├── screenshots/
-│   └── sis_app_preview.png                         # Screenshot 
+│   └── sis_dashboard_preview.png                         # Screenshot 
 │
 └── README.md
 ```
