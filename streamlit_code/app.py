@@ -24,6 +24,8 @@ def create_session():
     }
     return Session.builder.configs(connection_parameters).create()
 
+st.write("Secrets keys loaded:", st.secrets.keys())
+
 session = create_session()
 
 # Cache the data loading process
